@@ -623,6 +623,8 @@ EditorUI.initFrameControls = function() {
     EditorUI.requestDeleteFrame, false);
   ParaPara.svgRoot.addEventListener("changegraphic",
     EditorUI.updateThumbnails, false);
+  ParaPara.svgRoot.addEventListener("changehistory",
+    EditorUI.updateFrame, false);
 }
 
 EditorUI.appendFrame = function() {
@@ -659,6 +661,21 @@ EditorUI.updateThumbnails = function() {
   var currentFrame = ParaPara.getCurrentFrame();
   var filmstrip = document.getElementById("filmstrip");
   filmstrip.contentDocument.updateFrame(currentFrame.index, currentFrame.svg);
+}
+
+EditorUI.updateFrame = function(evt) {
+  var filmstrip = document.getElementById("filmstrip").contentDocument;
+  switch (evt.detail.cmd) {
+    case 'insert':
+      filmstrip.addFrame(false, evt.detail.index);
+    case 'update':
+      filmstrip.updateFrame(evt.detail.index, evt.detail.svg);
+      break;
+    case 'delete':
+      filmstrip.removeFrame(evt.detail.index);
+      break;
+  }
+  filmstrip.selectFrame(evt.detail.index);
 }
 
 // -------------- Nav controls -----------
