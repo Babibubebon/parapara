@@ -697,6 +697,9 @@ ParaPara.FrameList.prototype.getFrames = function() {
 }
 
 ParaPara.FrameList.prototype.getFrame = function(index) {
+  if (index < 0 || index >= this.getFrameCount())
+    return;
+  
   return this.getFrames()[index];
 }
 
@@ -996,8 +999,7 @@ ParaPara.HistoryManager.prototype.do = function(history) {
       ParaPara.frames.insertFrame(history.index, history.svg);
       break;
     case 'delete':
-      ParaPara.deleteFrame(history.index);
-      this.undoStack.pop(); // throw away
+      ParaPara.frames.deleteFrame(history.index);
       break;
   }
   ParaPara.selectFrame(history.index);
@@ -1015,19 +1017,22 @@ ParaPara.HistoryManager.prototype.undo = function() {
   
   switch (undo.cmd) {
     case 'update':
-      this.add('update', undo.index);
+      var cmd = 'update';
+      // Store current frame
+      this.add('update', undo.index, false);
+      // Move stored frame from undoStack to redoStack
       this.redoStack.push(this.undoStack.pop());
       break;
     case 'insert':
+      var cmd = 'delete';
       this.redoStack.push(undo);
-      undo.cmd = 'delete';
       break;
     case 'delete':
+      var cmd = 'insert';
       this.redoStack.push(undo);
-      undo.cmd = 'insert';
       break;
   }
-  this.do(undo);
+  this.do({ cmd: cmd, index: undo.index,  svg: undo.svg });
 }
 
 ParaPara.HistoryManager.prototype.redo = function() {
@@ -1035,11 +1040,13 @@ ParaPara.HistoryManager.prototype.redo = function() {
     return;
   
   var redo = this.redoStack.pop();
-  this.undoStack.push(redo);
-
+  
+  console.log(redo);
+  console.log('redoStack', this.redoStack);
+  
   switch (redo.cmd) {
     case 'update':
-      this.add('update', redo.index);
+      this.add('update', redo.index, false);
       break;
     case 'insert':
     case 'delete':
@@ -1049,12 +1056,13 @@ ParaPara.HistoryManager.prototype.redo = function() {
   this.do(redo);
 }
 
-ParaPara.HistoryManager.prototype.add = function(cmd, index) {
+ParaPara.HistoryManager.prototype.add = function(cmd, index, resetRedoStack) {
   console.log('History: add');
   
-  var history = { cmd: cmd, index: index, svg: ParaPara.frames.getFrame(index).cloneNode(true) };
-  this.undoStack.push(history);
-  this.redoStack = [];
+  this.undoStack.push({ cmd: cmd, index: index, svg: ParaPara.frames.getFrame(index).cloneNode(true) });
+  if (resetRedoStack !== false) {
+    this.redoStack = [];
+  }
   
   console.log('undoStack', this.undoStack);
 }
