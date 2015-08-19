@@ -1153,8 +1153,6 @@ EditorUI.initKeyControls = function() {
 }
 
 EditorUI.onKeyDown = function(evt) {
-  console.log(evt);
-  
   if (evt.ctrlKey && (evt.keyIdentifier === 'U+005A' || evt.keyCode === 90)) {
     // Ctrl + Z
     ParaPara.history.undo();

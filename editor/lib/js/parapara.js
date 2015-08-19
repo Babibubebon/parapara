@@ -986,8 +986,6 @@ ParaPara.HistoryManager = function() {
 }
 
 ParaPara.HistoryManager.prototype.do = function(history) {
-  console.log('do', history);
-  
   history.svg = history.svg.cloneNode(true);
   switch (history.cmd) {
     case 'update':
@@ -1011,10 +1009,6 @@ ParaPara.HistoryManager.prototype.undo = function() {
     return;
   
   var undo = this.undoStack.pop();
-  
-  console.log(undo);
-  console.log('undoStack', this.undoStack);
-  
   switch (undo.cmd) {
     case 'update':
       var cmd = 'update';
@@ -1040,10 +1034,6 @@ ParaPara.HistoryManager.prototype.redo = function() {
     return;
   
   var redo = this.redoStack.pop();
-  
-  console.log(redo);
-  console.log('redoStack', this.redoStack);
-  
   switch (redo.cmd) {
     case 'update':
       this.add('update', redo.index, false);
@@ -1057,12 +1047,8 @@ ParaPara.HistoryManager.prototype.redo = function() {
 }
 
 ParaPara.HistoryManager.prototype.add = function(cmd, index, resetRedoStack) {
-  console.log('History: add');
-  
   this.undoStack.push({ cmd: cmd, index: index, svg: ParaPara.frames.getFrame(index).cloneNode(true) });
   if (resetRedoStack !== false) {
     this.redoStack = [];
   }
-  
-  console.log('undoStack', this.undoStack);
 }
