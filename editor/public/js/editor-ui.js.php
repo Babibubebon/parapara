@@ -58,6 +58,7 @@ EditorUI.initControls = function() {
   EditorUI.initNavControls();
   EditorUI.initAnimControls();
   EditorUI.initSettingsMenu();
+  EditorUI.initKeyControls();
 
   EditorUI.currentSpeed = EditorUI.INITIAL_SPEED_FPS;
 
@@ -1145,3 +1146,21 @@ EditorUI.isCalcSupported = function() {
   EditorUI._calcSupported = !!el.style.length;
   return EditorUI._calcSupported;
 };
+
+// -------------- Key controls -----------
+EditorUI.initKeyControls = function() {
+  document.addEventListener("keydown", EditorUI.onKeyDown, false);
+}
+
+EditorUI.onKeyDown = function(evt) {
+  console.log(evt);
+  
+  if (evt.ctrlKey && (evt.keyIdentifier === 'U+005A' || evt.keyCode === 90)) {
+    // Ctrl + Z
+    ParaPara.history.undo();
+  }
+  if (evt.ctrlKey && (evt.keyIdentifier === 'U+0059' || evt.keyCode === 89)) {
+    // Ctrl + Y
+    ParaPara.history.redo();
+  }
+}
