@@ -998,6 +998,7 @@ ParaPara.HistoryManager.prototype.do = function(history) {
       break;
     case 'delete':
       ParaPara.frames.deleteFrame(history.index);
+      history.index = ParaPara.frames.getCurrentIndex();
       break;
   }
   ParaPara.selectFrame(history.index);
