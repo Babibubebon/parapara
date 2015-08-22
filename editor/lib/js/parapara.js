@@ -987,6 +987,7 @@ ParaPara.HistoryManager = function() {
 
 ParaPara.HistoryManager.prototype.do = function(history) {
   history.svg = history.svg.cloneNode(true);
+  var selectIndex = history.index;
   switch (history.cmd) {
     case 'update':
       ParaPara.frames.selectFrame(history.index);
@@ -998,10 +999,10 @@ ParaPara.HistoryManager.prototype.do = function(history) {
       break;
     case 'delete':
       ParaPara.frames.deleteFrame(history.index);
-      history.index = ParaPara.frames.getCurrentIndex();
+      selectIndex = ParaPara.frames.getCurrentIndex();
       break;
   }
-  ParaPara.selectFrame(history.index);
+  ParaPara.selectFrame(selectIndex);
   ParaPara.notifyHistoryChanged(history);
 }
 
