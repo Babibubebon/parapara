@@ -981,6 +981,7 @@ ParaPara.Utils.uuid = function() {
 
 // -------------------- History --------------------
 ParaPara.HistoryManager = function() {
+  this.MAX_STACK_SIZE = 50;
   this.undoStack = [];
   this.redoStack = [];
 }
@@ -1011,20 +1012,20 @@ ParaPara.HistoryManager.prototype.undo = function() {
     return;
   
   var undo = this.undoStack.pop();
-  switch (undo.cmd) {
+  var cmd = undo.cmd;
+  switch (cmd) {
     case 'update':
-      var cmd = 'update';
       // Store current frame
       this.add('update', undo.index, false);
       // Move stored frame from undoStack to redoStack
       this.redoStack.push(this.undoStack.pop());
       break;
     case 'insert':
-      var cmd = 'delete';
+      cmd = 'delete';
       this.redoStack.push(undo);
       break;
     case 'delete':
-      var cmd = 'insert';
+      cmd = 'insert';
       this.redoStack.push(undo);
       break;
   }
@@ -1049,6 +1050,9 @@ ParaPara.HistoryManager.prototype.redo = function() {
 }
 
 ParaPara.HistoryManager.prototype.add = function(cmd, index, resetRedoStack) {
+  if (this.undoStack.length >= this.MAX_STACK_SIZE) {
+    this.undoStack.shift();
+  }
   this.undoStack.push({ cmd: cmd, index: index, svg: ParaPara.frames.getFrame(index).cloneNode(true) });
   if (resetRedoStack !== false) {
     this.redoStack = [];
